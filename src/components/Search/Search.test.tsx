@@ -11,6 +11,11 @@ const setup = (overrides?: Partial<SearchProps>) => {
     return mockHandleSearch;
 }
 
+afterEach(() => {
+    // reset the URL
+    window.history.pushState({}, '', '/');
+})
+
 describe('Search Component', () => {
 
     test('updates input value correctly', () => {

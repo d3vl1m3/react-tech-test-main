@@ -50,8 +50,6 @@ const Search = ({
 
         setTypingTimeout(setTimeout(() => {
             handleSearch(value);
-
-            
         }, 500));
     };
 
