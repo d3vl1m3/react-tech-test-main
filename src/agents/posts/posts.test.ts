@@ -25,7 +25,7 @@ describe('posts agent', () => {
 
         it('should fetch posts successfully with searchParam', async () => {
             const mockPosts = [{ id: 1, title: 'Post 1' }];
-            const searchParam = 'test';
+            const searchParam = 'search';
             (fetch as jest.Mock).mockResolvedValueOnce({
                 ok: true,
                 json: async () => mockPosts,
@@ -33,21 +33,17 @@ describe('posts agent', () => {
 
             const result = await fetchPosts(searchParam);
 
-            const expectedUrl = new URL(`${BASE_URL}/posts`);
-            expectedUrl.searchParams.append('title_like', searchParam);
-            
-
-            expect(fetch).toHaveBeenCalledWith(expectedUrl.toString());
+            expect(fetch).toHaveBeenCalledWith(new URL(`${BASE_URL}/posts?title_like=search`).toString());
             expect(result).toEqual(mockPosts);
         });
 
         it('should handle fetch failure', async () => {
-            (fetch as jest.Mock).mockRejectedValueOnce(new Error('Fetch failed'));
+            (fetch as jest.Mock).mockResolvedValueOnce({ ok: false });
 
             const result = await fetchPosts();
 
             expect(fetch).toHaveBeenCalledWith(new URL(`${BASE_URL}/posts`).toString());
-            expect(result).toEqual([]);
+            expect(result).toEqual(new Error('Failed to fetch posts'));
         });
     });
 
@@ -56,18 +52,21 @@ describe('posts agent', () => {
             const postId = 1;
             (fetch as jest.Mock).mockResolvedValueOnce({ ok: true });
 
-            await deletePost(postId);
+            const result = await deletePost(postId);
 
             expect(fetch).toHaveBeenCalledWith(`${BASE_URL}/posts/${postId}`, { method: 'DELETE' });
+            expect(result).toEqual({ message: 'Post deleted successfully' });
         });
 
         it('should handle delete failure', async () => {
             const postId = 1;
             (fetch as jest.Mock).mockResolvedValueOnce({ ok: false });
 
-            await deletePost(postId);
+            const result = await deletePost(postId);
 
             expect(fetch).toHaveBeenCalledWith(`${BASE_URL}/posts/${postId}`, { method: 'DELETE' });
+            expect(result).toEqual(new Error('Failed to delete post'));
+            
         });
     });
 });
