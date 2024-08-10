@@ -11,6 +11,15 @@ const Search = ({
     isLoading
 }: SearchProps) => {
     const [searchTerm, setSearchTerm] = useState('');
+
+    useEffect(() => {
+        const urlSearchParams = new URLSearchParams(window.location.search);
+        const q = urlSearchParams.get('q');
+        if (q) {
+            setSearchTerm(q);
+        }
+    }, []);
+    
     const [typingTimeout, setTypingTimeout] = useState<number | null>(null);
 
     // clear timeout on unmount
@@ -24,7 +33,7 @@ const Search = ({
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
-        setSearchTerm(value);
+        setSearchTerm(value)
 
         // add value to the url as a query param
         const searchParams = new URLSearchParams();
@@ -48,9 +57,11 @@ const Search = ({
         <Grid container justifyContent="center">
             <Grid item xs={12} sm={8} md={6} lg={4}>
                 <TextField
+                fullWidth
                     variant='outlined'
                     placeholder='Search by title'
                     label='Search'
+                    aria-labelledby='search'
                     type="text"
                     value={searchTerm}
                     onChange={handleInputChange}
