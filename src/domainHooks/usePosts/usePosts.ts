@@ -52,7 +52,7 @@ export const useFetchPosts = () => {
     }
 
     return {
-        posts: data,
+        posts: data instanceof Error ? [] : data,
         isLoading,
         error,
         actions: {
