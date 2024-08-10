@@ -62,4 +62,17 @@ describe('Search Component', () => {
         const input = screen.getByPlaceholderText('Search by title');
         expect(input).toBeDisabled();
     })
+
+    test('when a query param exists in the URL on mount, it is set as the input value', () => {
+        Object.defineProperty(window, 'location', {
+            value: {
+                search: '?q=FooBarQuery',
+            },
+            writable: true,
+        });
+
+        setup();
+        const input = screen.getByPlaceholderText('Search by title');
+        expect(input).toHaveValue('FooBarQuery');
+    });
 });
