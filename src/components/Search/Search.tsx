@@ -11,6 +11,15 @@ const Search = ({
     isLoading
 }: SearchProps) => {
     const [searchTerm, setSearchTerm] = useState('');
+
+    useEffect(() => {
+        const urlSearchParams = new URLSearchParams(window.location.search);
+        const q = urlSearchParams.get('q');
+        if (q) {
+            setSearchTerm(q);
+        }
+    }, []);
+    
     const [typingTimeout, setTypingTimeout] = useState<number | null>(null);
 
     // clear timeout on unmount

@@ -24,21 +24,19 @@ const Posts = ({
             {isLoading && <p>Loading...</p>}
 
 
-            {!isLoading && posts && posts.length === 0 && (
+            {!isLoading && posts && posts.length <= 0 && (
                 <p>No posts found</p>
             )}
 
             {!isLoading && posts && posts.length > 0 && (
-            <main>
-                    {posts && posts.length > 0 && (
-                        <List>
-                            {posts.map((post) => (
-                                <ListItem>
-                                    <PostItem key={post.id} post={post} onRemove={onRemove} />
-                                </ListItem>
-                            ))}
-                        </List>
-                    )}
+                <main>
+                    <List>
+                        {posts.map((post) => (
+                            <ListItem key={post.id}>
+                                <PostItem key={post.id} post={post} onRemove={onRemove} />
+                            </ListItem>
+                        ))}
+                    </List>
                 </main>
 
             )}

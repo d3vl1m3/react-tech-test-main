@@ -13,6 +13,7 @@ export const useFetchPosts = () => {
     const [deleteError, setDeleteError] = useState<Error| null>(null);
 
     const deletePost = async (id: number) => {
+        setDeleteError(null);
         try {
             setIsDeleteLoading(true);
             await deletePostAgent(id);
@@ -31,11 +32,22 @@ export const useFetchPosts = () => {
         }
     }
 
+    const [isSearchLoading, setIsSearchLoading] = useState(false);
+    const [searchError, setSearchError] = useState<Error| null>(null);
     const fetchPosts = async (searchParam?: string) => {
+        setSearchError(null);
         try {
-            mutate(fetchPostsAgent(searchParam), false);
+            setIsSearchLoading(true);
+            await mutate(fetchPostsAgent(searchParam), false);
         } catch (error) {
+            if (error instanceof Error) {
+                setSearchError(error);
+            } else{
+                setSearchError(new Error('Unknown error searching posts'));
+            }
             console.error('Error searching posts:', error);
+        } finally {
+            setIsSearchLoading(false);
         }
     }
 
@@ -50,7 +62,9 @@ export const useFetchPosts = () => {
                 error: deleteError
             },
             fetch: {
-                apply: fetchPosts
+                apply: fetchPosts,
+                isLoading: isSearchLoading,
+                error: searchError
             },
         }
     };
