@@ -7,7 +7,7 @@ export const useFetchPosts = () => {
     let searchParams = new URLSearchParams(window.location.search).toString().split('=')[1];
     searchParams = searchParams?.replace(/\+/g, ' ')
 
-    const { data, error, isLoading, mutate, isValidating } = useSWR('/posts', () => fetchPostsAgent(searchParams));
+    const { data, error, isLoading, mutate } = useSWR('/posts', () => fetchPostsAgent(searchParams));
 
     const [isDeleteLoading, setIsDeleteLoading] = useState(false);
     const [deleteError, setDeleteError] = useState<Error| null>(null);
@@ -42,7 +42,6 @@ export const useFetchPosts = () => {
     return {
         posts: data,
         isLoading,
-        isValidating,
         error,
         actions: {
             delete: {
