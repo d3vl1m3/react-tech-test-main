@@ -8,7 +8,7 @@ export const handleGenericResponses = async (response: Response, customHandlers:
     }
 
     // if the response is ok, return the json
-    if (response.ok && response.status.toString().startsWith('2')) {
+    if (response.ok) {
         return await response.json();
     }
 
