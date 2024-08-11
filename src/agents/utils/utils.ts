@@ -1,15 +1,10 @@
-import { GenericApiError, UnknownError } from '../errors/errors';
+import { ApiError, GenericApiError, UnknownError } from '../errors/errors';
 
 // Function to handle generic responses with custom error handlers
-export const handleGenericResponses = async (response: Response, customHandlers: { [key: number]: (response: Response) => Promise<void> } = {}) => {
+export const handleGenericResponses = (response: Response, customHandlers: { [key: number]: (response: Response) => ApiError } = {}) => {
     // if there is a custom handler for the status code
     if (customHandlers[response.status]) {
         return customHandlers[response.status](response);
-    }
-
-    // if the response is ok, return the json
-    if (response.ok) {
-        return await response.json();
     }
 
     // convert the non-200 status codes to errors

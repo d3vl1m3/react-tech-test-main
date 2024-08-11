@@ -1,9 +1,12 @@
 import { Post } from '@/components/PostItem/PostItem';
 import { BASE_URL } from '../const';
 import { handleGenericResponses } from '../utils/utils';
-import { UnknownError } from '../errors/errors';
+import { ApiError, UnknownError } from '../errors/errors';
 
-const fetchPosts = async (searchParam?: string): Promise<Post[]|Error> => {
+
+export type ApiResponseType<T> = Promise<T|ApiError>;
+
+const fetchPosts = async (searchParam?: string): ApiResponseType<Post[]> => {
     let url = new URL(`${BASE_URL}/posts`);
     if (searchParam) {
         url.searchParams.append('title_like', searchParam);
@@ -11,9 +14,14 @@ const fetchPosts = async (searchParam?: string): Promise<Post[]|Error> => {
 
     try {
         const response = await fetch(url.toString());
-        // convert the non-200 status codes to errors
-        return handleGenericResponses(response);
+        
+        if (response.ok) {
+            const data = await response.json();
+            return data;
+        }
 
+        return handleGenericResponses(response);
+        
     } catch (error) {
         if (error instanceof Error) {
             return error;
@@ -22,11 +30,15 @@ const fetchPosts = async (searchParam?: string): Promise<Post[]|Error> => {
     }
 }
 
-const deletePost = async (id: number): Promise<{message: string}|Error> => {
+const deletePost = async (id: number): ApiResponseType<{message: string}> => {
     try {
         const response = await fetch(`${BASE_URL}/posts/${id}`, {
             method: 'DELETE',
         });
+
+        if (response.ok) {
+            return { message: 'Post deleted successfully' };
+        }
 
         return handleGenericResponses(response);
 
@@ -34,7 +46,7 @@ const deletePost = async (id: number): Promise<{message: string}|Error> => {
         if (error instanceof Error) {
             return error;
         }
-        return new UnknownError('Unknown error fetching posts');
+        return new UnknownError('Unknown error deleting post');
     }
 }
 
