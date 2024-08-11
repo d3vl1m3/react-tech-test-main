@@ -58,7 +58,9 @@ describe('posts agent', () => {
             const result = await deletePost(postId);
 
             expect(fetch).toHaveBeenCalledWith(`${BASE_URL}/posts/${postId}`, { method: 'DELETE' });
-            expect(result).toEqual({});
+            expect(result).toEqual({
+                message: 'Post deleted successfully'
+            });
         });
 
         it('should handle delete failure', async () => {

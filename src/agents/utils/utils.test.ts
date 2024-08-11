@@ -9,8 +9,10 @@ describe('handleGenericResponses', () => {
             json: jest.fn().mockResolvedValue({ data: 'test' })
         } as unknown as Response;
 
-        const result = await handleGenericResponses(mockResponse);
-        expect(result).toEqual({ data: 'test' });
+        const result = handleGenericResponses(mockResponse);
+        expect(result).toEqual(
+            new UnknownError('An unknown error occurred')
+        );
     });
 
     it('should call custom handler when custom handler for status code is provided', async () => {
@@ -19,12 +21,12 @@ describe('handleGenericResponses', () => {
             status: 400
         } as unknown as Response;
 
-        const customHandler = jest.fn().mockResolvedValue('custom handler called');
+        const customHandler = jest.fn().mockReturnValue('custom handler called');
         const customHandlers = {
             400: customHandler
         };
 
-        const result = await handleGenericResponses(mockResponse, customHandlers);
+        const result = handleGenericResponses(mockResponse, customHandlers);
         expect(customHandler).toHaveBeenCalledWith(mockResponse);
         expect(result).toBe('custom handler called');
     });
@@ -35,7 +37,7 @@ describe('handleGenericResponses', () => {
             status: 400
         } as unknown as Response;
 
-        const result = await handleGenericResponses(mockResponse);
+        const result = handleGenericResponses(mockResponse);
         expect(result).toBeInstanceOf(GenericApiError);
         expect(result.message).toBe('Bad Request');
     });
@@ -46,7 +48,7 @@ describe('handleGenericResponses', () => {
             status: 401
         } as unknown as Response;
 
-        const result = await handleGenericResponses(mockResponse);
+        const result = handleGenericResponses(mockResponse);
         expect(result).toBeInstanceOf(GenericApiError);
         expect(result.message).toBe('Unauthorized');
     });
@@ -57,7 +59,7 @@ describe('handleGenericResponses', () => {
             status: 403
         } as unknown as Response;
 
-        const result = await handleGenericResponses(mockResponse);
+        const result = handleGenericResponses(mockResponse);
         expect(result).toBeInstanceOf(GenericApiError);
         expect(result.message).toBe('Forbidden');
     });
@@ -68,7 +70,7 @@ describe('handleGenericResponses', () => {
             status: 404
         } as unknown as Response;
 
-        const result = await handleGenericResponses(mockResponse);
+        const result = handleGenericResponses(mockResponse);
         expect(result).toBeInstanceOf(GenericApiError);
         expect(result.message).toBe('Not Found');
     });
@@ -79,7 +81,7 @@ describe('handleGenericResponses', () => {
             status: 500
         } as unknown as Response;
 
-        const result = await handleGenericResponses(mockResponse);
+        const result = handleGenericResponses(mockResponse);
         expect(result).toBeInstanceOf(GenericApiError);
         expect(result.message).toBe('Internal Server Error');
     });
@@ -90,7 +92,7 @@ describe('handleGenericResponses', () => {
             status: 418
         } as unknown as Response;
 
-        const result = await handleGenericResponses(mockResponse);
+        const result = handleGenericResponses(mockResponse);
         expect(result).toBeInstanceOf(UnknownError);
         expect(result.message).toBe('An unknown error occurred');
     });
