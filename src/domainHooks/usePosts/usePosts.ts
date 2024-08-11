@@ -14,47 +14,42 @@ export const useFetchPosts = () => {
 
     const deletePost = async (id: number) => {
         setDeleteError(null);
-        try {
-            setIsDeleteLoading(true);
-            await deletePostAgent(id);
-            mutate();
-        } catch (error) {
-            if (error instanceof Error) {
-                console.error('Error deleting post:', error);
-                setDeleteError(error);
-            } else {
-                console.error('Unknown error deleting post:', error);
-                setDeleteError(new Error('Unknown error deleting post'));
-            }
-             
-        } finally {
+
+        setIsDeleteLoading(true);
+        const repsonse = await deletePostAgent(id);
+        setIsDeleteLoading(false);
+
+        if ( repsonse instanceof Error) {
+            console.error('Error deleting post:', repsonse);
+            setDeleteError(repsonse);
             setIsDeleteLoading(false);
         }
+
+        // when we delete a post, we need to refetch the posts instead of just mutating locally
+        mutate();
+            
     }
 
     const [isSearchLoading, setIsSearchLoading] = useState(false);
     const [searchError, setSearchError] = useState<Error| null>(null);
     const fetchPosts = async (searchParam?: string) => {
         setSearchError(null);
-        try {
-            setIsSearchLoading(true);
-            await mutate(fetchPostsAgent(searchParam), false);
-        } catch (error) {
-            if (error instanceof Error) {
-                setSearchError(error);
-            } else{
-                setSearchError(new Error('Unknown error searching posts'));
-            }
-            console.error('Error searching posts:', error);
-        } finally {
-            setIsSearchLoading(false);
+
+        setIsSearchLoading(true);
+        const response = await mutate(fetchPostsAgent(searchParam), false);
+        setIsSearchLoading(false);
+
+        if (response instanceof Error) {
+            console.error('Error fetching posts:', data);
+            setSearchError(response);
         }
     }
 
     return {
+        // because we are returning errors as data, we need to check if the data is an instance of Error
         posts: data instanceof Error ? [] : data,
         isLoading,
-        error,
+        error: data instanceof Error ? data : error,
         actions: {
             delete: {
                 apply: deletePost,

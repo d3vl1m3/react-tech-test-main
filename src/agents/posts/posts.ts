@@ -1,5 +1,7 @@
 import { Post } from '@/components/PostItem/PostItem';
 import { BASE_URL } from '../const';
+import { handleGenericResponses } from '../utils/utils';
+import { UnknownError } from '../errors/errors';
 
 const fetchPosts = async (searchParam?: string): Promise<Post[]|Error> => {
     let url = new URL(`${BASE_URL}/posts`);
@@ -7,25 +9,36 @@ const fetchPosts = async (searchParam?: string): Promise<Post[]|Error> => {
         url.searchParams.append('title_like', searchParam);
     }
 
+
     try {
         const response = await fetch(url.toString());
-        return response.json();
+        // convert the non-200 status codes to errors
+        return handleGenericResponses(response);
+
     } catch (error) {
-        return new Error('Failed to fetch posts');
+        if (error instanceof Error) {
+            return error;
+        }
+        return new UnknownError('Unknown error fetching posts');
     }
+
+    
+
 }
 
 const deletePost = async (id: number): Promise<{message: string}|Error> => {
-    const response = await fetch(`${BASE_URL}/posts/${id}`, {
-        method: 'DELETE',
-    });
+    try {
+        const response = await fetch(`${BASE_URL}/posts/${id}`, {
+            method: 'DELETE',
+        });
 
-    if (response.ok) {
-        return {
-            message: 'Post deleted successfully',
-        };
-    } else {
-        return new Error('Failed to delete post');
+        return handleGenericResponses(response);
+
+    } catch (error) {
+        if (error instanceof Error) {
+            return error;
+        }
+        return new UnknownError('Unknown error fetching posts');
     }
 }
 
