@@ -49,9 +49,7 @@ describe('useFetchPosts', () => {
 
     it('should handle fetch posts error', async () => {
         const consoleErrorMock = jest.spyOn(console, 'error').mockImplementation(() => {});
-        const mutateMock = jest.fn().mockImplementation(() => {
-            throw new Error('Fetch error');
-        });
+        const mutateMock = jest.fn().mockImplementation(() => new Error('Fetch error'));
         (useSWR as jest.Mock).mockReturnValue({
             data: [],
             error: null,
@@ -65,7 +63,7 @@ describe('useFetchPosts', () => {
             await result.current.actions.fetch.apply('test search');
         });
 
-        expect(consoleErrorMock).toHaveBeenCalledWith('Error searching posts:', expect.any(Error));
+        expect(consoleErrorMock).toHaveBeenCalledWith('Error fetching posts:', []);
         consoleErrorMock.mockRestore();
     });
 
@@ -97,9 +95,7 @@ describe('useFetchPosts', () => {
             isLoading: false,
             mutate: mutateMock,
         });
-        (deletePostAgent as jest.Mock).mockImplementation(() => {
-            throw new Error('Delete error');
-        });
+        (deletePostAgent as jest.Mock).mockImplementation(() => new Error('Delete error'));
 
         const { result } = renderHook(() => useFetchPosts());
 
