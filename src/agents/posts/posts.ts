@@ -9,7 +9,6 @@ const fetchPosts = async (searchParam?: string): Promise<Post[]|Error> => {
         url.searchParams.append('title_like', searchParam);
     }
 
-
     try {
         const response = await fetch(url.toString());
         // convert the non-200 status codes to errors
@@ -21,9 +20,6 @@ const fetchPosts = async (searchParam?: string): Promise<Post[]|Error> => {
         }
         return new UnknownError('Unknown error fetching posts');
     }
-
-    
-
 }
 
 const deletePost = async (id: number): Promise<{message: string}|Error> => {
