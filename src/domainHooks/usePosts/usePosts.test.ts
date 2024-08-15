@@ -40,11 +40,11 @@ describe('useFetchPosts', () => {
         const { result } = renderHook(() => useFetchPosts());
 
         await act(async () => {
-            await result.current.actions.fetch.apply('test search');
+            await result.current.actions.fetch.apply({'search': 'test search'});
         });
 
-        expect(mutateMock).toHaveBeenCalledWith(fetchPostsAgent('test search'), false);
-        expect(fetchPostsAgent).toHaveBeenCalledWith('test search');
+        expect(mutateMock).toHaveBeenCalledWith(fetchPostsAgent({'search': 'test search'}), false);
+        expect(fetchPostsAgent).toHaveBeenCalledWith({'search': 'test search'});
     });
 
     it('should handle fetch posts error', async () => {
@@ -60,7 +60,7 @@ describe('useFetchPosts', () => {
         const { result } = renderHook(() => useFetchPosts());
 
         await act(async () => {
-            await result.current.actions.fetch.apply('test search');
+            await result.current.actions.fetch.apply({'search': 'test search'});
         });
 
         expect(consoleErrorMock).toHaveBeenCalledWith('Error fetching posts:', []);

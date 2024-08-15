@@ -7,7 +7,7 @@ afterAll(() => {
 
 const setup = (overrides?: Partial<SearchProps>) => {
     const mockHandleSearch = jest.fn();
-    render(<Search handleSearch={mockHandleSearch} {...overrides} />);
+    render(<Search fetchPosts={mockHandleSearch} {...overrides} />);
     return mockHandleSearch;
 }
 
@@ -29,26 +29,26 @@ describe('Search Component', () => {
         setup();
         const input = screen.getByPlaceholderText('Search by title');
         fireEvent.change(input, { target: { value: 'Test' } });
-        expect(window.location.search).toBe('?q=Test');
+        expect(window.location.search).toBe('?title_like=Test');
     });
 
     test('calls handleSearch with correct value after timeout', () => {
         const mockHandleSearch = jest.fn();
         setup({
-            handleSearch: mockHandleSearch,
+            fetchPosts: mockHandleSearch,
         });
         jest.useFakeTimers();
         const input = screen.getByPlaceholderText('Search by title');
         fireEvent.change(input, { target: { value: 'Test' } });
         jest.advanceTimersByTime(500);
-        expect(mockHandleSearch).toHaveBeenCalledWith('Test');
+        expect(mockHandleSearch).toHaveBeenCalledWith({title_like: 'Test'});
         jest.useRealTimers();
     });
 
     test('does not call handleSearch if input value changes before timeout', () => {
         const mockHandleSearch = jest.fn();
         setup({
-            handleSearch: mockHandleSearch,
+            fetchPosts: mockHandleSearch,
         });
         
         jest.useFakeTimers();

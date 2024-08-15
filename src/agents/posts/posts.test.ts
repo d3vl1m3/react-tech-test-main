@@ -34,9 +34,9 @@ describe('posts agent', () => {
                 json: async () => mockPosts,
             });
 
-            const result = await fetchPosts(searchParam);
+            const result = await fetchPosts({'search': searchParam});
 
-            expect(fetch).toHaveBeenCalledWith(new URL(`${BASE_URL}/posts?title_like=search`).toString());
+            expect(fetch).toHaveBeenCalledWith(new URL(`${BASE_URL}/posts?search=search`).toString());
             expect(result).toEqual(mockPosts);
         });
 

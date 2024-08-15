@@ -15,7 +15,7 @@ describe('Posts Component', () => {
         const defaultProps = {
             posts: mockPosts,
             onRemove: mockOnRemove,
-            handleSearch: mockHandleSearch,
+            fetchPosts: mockHandleSearch,
             isLoading: false,
         };
         return render(<Posts {...defaultProps} {...props} />);

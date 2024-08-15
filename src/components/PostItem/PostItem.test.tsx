@@ -18,7 +18,7 @@ describe('PostItem Component', () => {
         expect(screen.getByText('Test Title')).toBeInTheDocument();
         expect(screen.getByText('Test Body')).toBeInTheDocument();
     });
-
+ 
     test('calls onRemove with correct id when remove button is clicked', () => {
         fireEvent.click(screen.getByText('Remove'));
         expect(mockOnRemove).toHaveBeenCalledWith(mockPost.id);

@@ -1,7 +1,7 @@
 import Search from '../../components/Search/Search';
 import PostItem, { type Post } from '../../components/PostItem/PostItem';
 import { List, ListItem } from '@material-ui/core';
-import { Pagination } from '@/components/Pagination/Pagination';
+import { Pagination } from '../../components/Pagination/Pagination';
 
 type PostsProps = {
     posts?: Post[];
