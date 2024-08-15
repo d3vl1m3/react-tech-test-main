@@ -2,17 +2,17 @@ import { Grid, TextField } from '@material-ui/core';
 import { useEffect, useState } from 'react';
 
 export type SearchProps = {
-    handleSearch: (searchParams: string) => void;
+    fetchPosts: (searchParams: {[k: string]: string}) => void;
     isLoading?: boolean;
 }
 
 const Search = ({
-    handleSearch,
+    fetchPosts,
     isLoading
 }: SearchProps) => {
     const [searchTerm, setSearchTerm] = useState('');
 
-    useEffect(() => {
+    useEffect(() => {   
         const urlSearchParams = new URLSearchParams(window.location.search);
         const q = urlSearchParams.get('q');
         if (q) {
@@ -33,11 +33,11 @@ const Search = ({
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
-        setSearchTerm(value)
+        setSearchTerm(value);
 
         // add value to the url as a query param
         const searchParams = new URLSearchParams();
-        searchParams.set('q', value);
+        searchParams.set('title_like', value);
 
         // add the search param to the URL
         const newUrl = `${window.location.pathname}?${searchParams.toString()}`;
@@ -49,7 +49,7 @@ const Search = ({
         }
 
         setTypingTimeout(setTimeout(() => {
-            handleSearch(value);
+            fetchPosts({'title_like': value});
         }, 500));
     };
 

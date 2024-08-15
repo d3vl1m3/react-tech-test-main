@@ -3,13 +3,18 @@ import { BASE_URL } from '../const';
 import { handleGenericResponses } from '../utils/utils';
 import { ApiError, UnknownError } from '../errors/errors';
 
+export type ApiResponseType<T> = Promise<T|ApiError>
+export type AdditionalUrParams = { [k: string]: string; }
 
-export type ApiResponseType<T> = Promise<T|ApiError>;
-
-const fetchPosts = async (searchParam?: string): ApiResponseType<Post[]> => {
+const fetchPosts = async (searchParam?: { [k: string]: string; }): ApiResponseType<Post[]> => {
     let url = new URL(`${BASE_URL}/posts`);
+    
     if (searchParam) {
-        url.searchParams.append('title_like', searchParam);
+        const keys = Object.keys(searchParam);
+
+        keys.forEach(k => {
+            url.searchParams.append(k, searchParam[k]);
+        });
     }
 
     try {

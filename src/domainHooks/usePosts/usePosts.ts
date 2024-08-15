@@ -2,10 +2,30 @@ import useSWR from 'swr';
 import { fetchPosts as fetchPostsAgent, deletePost as deletePostAgent } from '../../agents/posts/posts';
 import { useState } from 'react';
 
+export const getSearchParams = (): {[k: string]: string} => {
+    const entries = new URLSearchParams(window.location.search).entries()
+    // loop through the entries and create an object from them
+    const searchParams = Object.fromEntries(entries);
+    // replace any '+' with a space
+    Object.keys(searchParams).forEach(k => {
+        searchParams[k] = searchParams[k].replace(/\+/g, ' ');
+    });
+
+    // add a _per_page and _page key to the searchParams object if they doesn't exist
+    if (!searchParams._per_page) {
+        searchParams._per_page = '10';
+    }
+
+    if (!searchParams._page) {
+        searchParams._page = '1';
+    }
+
+    return searchParams;
+
+}
+
 export const useFetchPosts = () => {
-    // get the search param from the URL    
-    let searchParams = new URLSearchParams(window.location.search).toString().split('=')[1];
-    searchParams = searchParams?.replace(/\+/g, ' ')
+    const searchParams = getSearchParams();
 
     const { data, error, isLoading, mutate } = useSWR('/posts', () => fetchPostsAgent(searchParams));
 
@@ -32,7 +52,8 @@ export const useFetchPosts = () => {
 
     const [isSearchLoading, setIsSearchLoading] = useState(false);
     const [searchError, setSearchError] = useState<Error| null>(null);
-    const fetchPosts = async (searchParam?: string) => {
+    
+    const fetchPosts = async (searchParam?: {[k: string]: string}) => {
         setSearchError(null);
 
         setIsSearchLoading(true);
